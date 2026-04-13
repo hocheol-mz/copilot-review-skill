@@ -13,7 +13,7 @@ Copilot CLI를 사용한 read-only 코드리뷰를 실행합니다.
 아래 명령어를 실행하고 출력 결과를 그대로 보여주세요:
 
 ```bash
-bash "${CLAUDE_SKILL_DIR}/scripts/review.sh" "$ARGUMENTS"
+python3 "${CLAUDE_SKILL_DIR}/scripts/review.py" "$ARGUMENTS"
 ```
 
 - 인자 없으면: 워킹 트리 변경사항이 있으면 워킹 트리, 없으면 마지막 커밋 리뷰

@@ -43,7 +43,7 @@ Claude Code에서:
 .claude/skills/review/
 ├── SKILL.md              # 스킬 정의 (진입점, read-only 강제)
 └── scripts/
-    └── review.sh         # Copilot CLI 실행 (scope 자동 감지)
+    └── review.py         # Copilot CLI 실행 (scope 자동 감지)
 ```
 
 ## 동작 방식
