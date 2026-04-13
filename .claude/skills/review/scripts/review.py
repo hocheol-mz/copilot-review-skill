@@ -31,9 +31,9 @@ def git(*args: str) -> str:
 
 
 def get_working_tree_state() -> dict:
-    staged = git("diff", "--cached", "--name-only").splitlines()
-    unstaged = git("diff", "--name-only").splitlines()
-    untracked = git("ls-files", "--others", "--exclude-standard").splitlines()
+    staged = git("diff", "--cached", "--name-only", "--", ".").splitlines()
+    unstaged = git("diff", "--name-only", "--", ".").splitlines()
+    untracked = git("ls-files", "--others", "--exclude-standard", "--", ".").splitlines()
     return {
         "staged": len(staged),
         "unstaged": len(unstaged),
@@ -44,27 +44,27 @@ def get_working_tree_state() -> dict:
 
 def collect_working_tree_diff() -> str:
     parts = []
-    cached = git("diff", "--cached")
+    cached = git("diff", "--cached", "--", ".")
     if cached:
         parts.append(cached)
-    unstaged = git("diff")
+    unstaged = git("diff", "--", ".")
     if unstaged:
         parts.append(unstaged)
 
-    untracked = git("ls-files", "--others", "--exclude-standard").splitlines()
+    untracked = git("ls-files", "--others", "--exclude-standard", "--", ".").splitlines()
     for path in untracked:
         try:
             with open(path, "r", encoding="utf-8", errors="replace") as f:
                 content = f.read()
             parts.append(f"=== NEW FILE: {path} ===\n{content}")
-        except (OSError, IsADirectoryError):
+        except OSError:
             continue
 
     return "\n".join(parts)
 
 
 def collect_commit_diff(revision_range: str) -> str:
-    return git("diff", revision_range)
+    return git("diff", revision_range, "--", ".")
 
 
 def resolve_scope(arg: str, state: dict) -> str:
@@ -91,7 +91,7 @@ def main() -> None:
         label = f"워킹 트리 (staged: {state['staged']}, unstaged: {state['unstaged']}, untracked: {state['untracked']})"
         diff = collect_working_tree_diff()
     elif scope == "last-commit":
-        commit_msg = git("log", "-1", "--pretty=format:%h %s")
+        commit_msg = git("log", "-1", "--pretty=format:%h %s", "--", ".")
         label = f"마지막 커밋: {commit_msg}"
         diff = collect_commit_diff("HEAD~1..HEAD")
     else:
